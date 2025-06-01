@@ -45,17 +45,71 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:padding="16dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add a New Alarm"
-            android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:text="Select Time:"
+            android:textSize="16sp"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:id="@+id/tv_time_picker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tap to pick time"
+            android:textSize="24sp"
+            android:background="@android:color/darker_gray"
+            android:padding="12dp"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Label:"
+            android:layout_marginTop="24dp" />
+
+        <EditText
+            android:id="@+id/et_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="e.g. Wake up, Meeting"
+            android:inputType="textPersonName"
+            android:layout_marginTop="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Enable this alarm"
+                android:layout_weight="1" />
+
+            <Switch
+                android:id="@+id/switch_enable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+        </LinearLayout>
+        <Button
+            android:id="@+id/btn_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete"
+            android:layout_margin="16dp"
+            android:visibility="gone"/>
 
     </LinearLayout>
+
 
 </LinearLayout>
