@@ -24,7 +24,6 @@ public class AddAlarm extends AppCompatActivity {
     private TextView tvTimePicker;
     private EditText etLabel;
     private Switch switchEnable;
-    private Button btnDelete;
 
 
     @Override
@@ -80,7 +79,9 @@ public class AddAlarm extends AppCompatActivity {
             resultIntent.putExtra("isEnabled", isEnabled);
             if (alarmId != -1) {
                 resultIntent.putExtra("id", alarmId);
-            }            setResult(Activity.RESULT_OK, resultIntent);
+            }
+
+            setResult(Activity.RESULT_OK, resultIntent);
             finish();
         });
 

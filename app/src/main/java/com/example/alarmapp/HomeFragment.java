@@ -1,9 +1,16 @@
 package com.example.alarmapp;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.Manifest;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +22,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class HomeFragment extends Fragment {
     private LinearLayout alarmContainer;
@@ -31,6 +41,16 @@ public class HomeFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1001);
+            }
+        }
+
+
+
         view = inflater.inflate(R.layout.fragment_home, container, false);
         alarmContainer = view.findViewById(R.id.test);
 
@@ -51,6 +71,7 @@ public class HomeFragment extends Fragment {
         super.onResume();
         loadAlarms();
     }
+    @SuppressLint("ScheduleExactAlarm")
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -77,11 +98,38 @@ public class HomeFragment extends Fragment {
                     dbHelper.updateAlarm(id, time, label, isEnabled);
                     Toast.makeText(getContext(), "Alarm updated", Toast.LENGTH_SHORT).show();
                 }
-                Log.d("AlarmEdit", "Received ID: " + id);
+                if (isEnabled) {
+                    String[] timeParts = time.split(":");
+                    int hour = Integer.parseInt(timeParts[0]);
+                    int minute = Integer.parseInt(timeParts[1]);
 
-        }
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(Calendar.HOUR_OF_DAY, hour);
+                    calendar.set(Calendar.MINUTE, minute);
+                    calendar.set(Calendar.SECOND, 0);
+                    calendar.set(Calendar.MILLISECOND, 0);
+
+                    if (calendar.before(Calendar.getInstance())) {
+                        calendar.add(Calendar.DATE, 1); // tomorrow
+                    }
+
+                    AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
+                    Intent alarmIntent = new Intent(requireContext(), AlarmReceiver.class);
+                    alarmIntent.putExtra("label", label); // optional
+
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                            requireContext(), id, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+                    );
+
+                    if (alarmManager != null) {
+                        alarmManager.setExactAndAllowWhileIdle(
+                                AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent
+                        );
+                    }
+                }
+            }
             loadAlarms();
-    }
+        }
     }
 
     private void addAlarmView(String time, String label, boolean isEnabled) {
@@ -139,5 +187,17 @@ public class HomeFragment extends Fragment {
             container.addView(alarmView);
         }
     }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1001) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, you can now show notifications
+            } else {
+                Toast.makeText(getContext(), "Notification permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 
 }
