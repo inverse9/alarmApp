@@ -56,12 +56,13 @@ public class AddAlarm extends AppCompatActivity {
             toolbarTitle.setText("Edit Alarm");
 
             btnDelete.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             toolbarTitle.setText("Add Alarm");
             btnDelete.setVisibility(View.GONE);
         }
 
         tvTimePicker.setOnClickListener(v -> openTimePicker());
+
         btnBack.setOnClickListener(v -> finish());
 
         btnCheck.setOnClickListener(v -> {
@@ -92,7 +93,7 @@ public class AddAlarm extends AppCompatActivity {
 
                 Toast.makeText(this, "Alarm deleted", Toast.LENGTH_SHORT).show();
                 setResult(RESULT_OK);
-                finish(); // close the activity
+                finish();
             }
         });
     }

@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -31,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
                 } else if (item.getItemId() == R.id.nav_clock) {
                     selectedFragment = new ClockFragment();
                 }
-
                 if (selectedFragment != null) {
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, selectedFragment)
@@ -42,7 +40,4 @@ public class MainActivity extends AppCompatActivity {
         });
         bottomNavigationView.setSelectedItemId(R.id.nav_home);
     }
-
-
-
 }

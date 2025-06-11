@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.Manifest;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +21,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -110,12 +108,12 @@ public class HomeFragment extends Fragment {
                     calendar.set(Calendar.MILLISECOND, 0);
 
                     if (calendar.before(Calendar.getInstance())) {
-                        calendar.add(Calendar.DATE, 1); // tomorrow
+                        calendar.add(Calendar.DATE, 1);
                     }
 
                     AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
                     Intent alarmIntent = new Intent(requireContext(), AlarmReceiver.class);
-                    alarmIntent.putExtra("label", label); // optional
+                    alarmIntent.putExtra("label", label);
 
                     PendingIntent pendingIntent = PendingIntent.getBroadcast(
                             requireContext(), id, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
@@ -130,24 +128,6 @@ public class HomeFragment extends Fragment {
             }
             loadAlarms();
         }
-    }
-
-    private void addAlarmView(String time, String label, boolean isEnabled) {
-        if (alarmContainer == null) {
-            return;
-        }
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        View alarmView = inflater.inflate(R.layout.alarm_item, alarmContainer, false);
-
-        TextView timeTextView = alarmView.findViewById(R.id.alarm_time);
-        TextView labelTextView = alarmView.findViewById(R.id.alarm_label);
-        Switch switchToggle = alarmView.findViewById(R.id.alarm_switch);
-
-        timeTextView.setText(time);
-        labelTextView.setText(label);
-        switchToggle.setChecked(isEnabled);
-        alarmContainer.addView(alarmView);
-        alarmContainer.post(() -> alarmContainer.invalidate());
     }
 
     private void loadAlarms() {
@@ -171,7 +151,6 @@ public class HomeFragment extends Fragment {
             switchEnable.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    // Update DB with new switch state
                     AlarmDatabaseHelper dbHelper = new AlarmDatabaseHelper(getContext());
                     dbHelper.updateAlarmEnabled(alarm.getId(), isChecked);
                 }
@@ -187,17 +166,19 @@ public class HomeFragment extends Fragment {
             container.addView(alarmView);
         }
     }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1001) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted, you can now show notifications
-            } else {
-                Toast.makeText(getContext(), "Notification permission denied", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        if (requestCode == 1001) {
+//            if (permissions.length > 0 && permissions[0].equals(Manifest.permission.POST_NOTIFICATIONS)) {
+//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    Toast.makeText(getContext(), "Notification permission granted", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    Toast.makeText(getContext(), "Notification permission denied", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        }
+//    }
 
 
 }
